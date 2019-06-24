@@ -62,7 +62,7 @@ class FormLogin extends Component
                 $('#loading-full').toggle();
                 if(error.response.status != 200){
                     new TratadorErros().publicaErros(error.response.data.error);
-                    this.setState({msg:'Login incorreto'});
+                    this.setState({msg:'Login ou senha incorretos'});
                 }
                 return;
             });
@@ -82,10 +82,11 @@ class FormLogin extends Component
                 <style>{'body { background: linear-gradient(to bottom right, #75618b, #383939); }'}</style>
                 <div id="formLogin" className="login-box center" style={{'textAlign':'center'}}>
                     <img src={require("./img/logo.png")} width="200px"/>
-                    <span>{this.state.msg}</span>
+                    
                     <form onSubmit={this.Login.bind(this)} method="post"> 
                         <InputCustomizado labels="Email" id="email" type="email" name="email" value={this.state.email} placeholder="digite seu email" onChange={this.setEmail.bind(this)}/>     
                         <InputCustomizado labels="Senha" id="senha" type="password" name="password" value={this.state.password} placeholder="digite sua senha" onChange={this.setSenha.bind(this)}/>     
+                        <span style={{color:'red'}}>{this.state.msg}</span>
                         <button className="button type1">
                             Logar
                         </button>

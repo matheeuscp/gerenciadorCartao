@@ -9,8 +9,9 @@ export default class Detalhe extends Component {
         return(
             <div >
               <Menu/>
-              <b.Container style={{width:'100%'}}>
-                <b.Row className='conteudo'>
+              <b.Container style={{width:'100%', textAlign:'center', padding:'0'}}>
+                <b.Row className='conteudo' style={{display:'inline-block', width:'100%'}} >
+                        <h1 style={{margin:'30px auto 0px',}}>Extrato</h1>
                         <b.Table   hover style={{width:'90%', margin:'10px auto',textAlign:'left'}}>
                                     <thead>
                                         <tr>
@@ -32,11 +33,11 @@ export default class Detalhe extends Component {
                                             <td nowrap>R$ 890,00</td>
                                             <td nowrap>R$ 1.400,00</td>
                                         </tr>
+                                        <tr>
+                                            <td colSpan="3"></td>
+                                        </tr>
                                     </tbody>
                         </b.Table>
-                        <div style={{width:'90%', margin:'10px auto', background: 'rgb(229, 224, 224)', display:'flex', textAlign: 'left'}}>
-                            
-                        </div>
                         <b.Table striped bordered hover style={{width:'90%', margin:'10px auto'}}>
                             <thead>
                                 <tr>
