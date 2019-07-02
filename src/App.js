@@ -12,18 +12,15 @@ class App extends Component{
     render(){
         return (
             <div className='App'>
-
                 <Menu/>
-                <b.Container>
-
-                    <b.Row className='conteudo'>
-                        <b.Col md={{ span: 6, offset: 3 }}>
-                                    <Main/>
+                    <b.Container>
+                        <b.Row className='conteudo'>
+                            <b.Col md={{ span: 6, offset: 3 }}>
+                                <Main/>
                             </b.Col>
                         </b.Row>
                     </b.Container>
                 <MenuFooter/>                   
-
             </div>
         )
     }

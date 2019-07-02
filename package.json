@@ -17,6 +17,7 @@
     "react-icons": "^3.7.0",
     "react-push-menu": "^1.0.2",
     "react-scripts": "3.0.1",
+    "react-select-search": "^0.9.6",
     "react-slide-menu": "^0.5.1",
     "recharts": "^1.6.2"
   },
