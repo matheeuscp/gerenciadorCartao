@@ -37,7 +37,7 @@ export default class CadCartao extends React.Component {
 	handleInputFocus = ({ target }) => {
 		this.setState({
 			focused: target.name,
-		});
+		});		
 	};
 
 	handleInputChange = ({ target }) => {

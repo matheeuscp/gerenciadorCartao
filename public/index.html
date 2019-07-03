@@ -52,41 +52,5 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <!-- <script>
-      $(document).ready(function(){
-       $('.selectpicker').selectpicker();
-      
-       $('#framework').change(function(){
-        $('#hidden_framework').val($('#framework').val());
-       });
-      
-       $('#multiple_select_form').on('submit', function(event){
-        event.preventDefault();
-        if($('#framework').val() != '')
-        {
-         var form_data = $(this).serialize();
-         $.ajax({
-          url:"insert.php",
-          method:"POST",
-          data:form_data,
-          success:function(data)
-          {
-           //console.log(data);
-           $('#hidden_framework').val('');
-           $('.selectpicker').selectpicker('val', '');
-           alert(data);
-          }
-         })
-        }
-        else
-        {
-         alert("Please select framework");
-         return false;
-        }
-       });
-      });
-      //Initialize with the list of symbols
-
-      </script> -->
   </body>
 </html>
