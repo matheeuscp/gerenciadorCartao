@@ -10,14 +10,19 @@ import Complete from '../complete/Complete';
 import Loading from '../load/Load';
 import MenuFooter from '../menuFooter/MenuFooter';
 import  './search.css';
-
+import Spinner from 'react-bootstrap/Spinner';
 
 function filter(word, items) {
 	var length = items.length;
-    var collection = [];
     var hidden = 0;
-    for (var i = 0; i < length; i++) {
-		if (items[i].value.toLowerCase().startsWith(word)) {
+
+	if(length === 0){
+		$(items).hide();
+		return;
+	}
+	for (var i = 0; i < length; i++) 
+	{
+		if (items[i].value.toLowerCase().startsWith(word.trim())) {
 			$(items[i]).show();
 		}
 		else {
@@ -25,65 +30,64 @@ function filter(word, items) {
 			hidden++;
 		}
     }
-
-    //If all items are hidden, show the empty view
+	//If all items are hidden, show the empty view
     if(hidden === length) {
     	$('#aviso').show();
     }
     else {
 		$("#aviso").hide();
-    }
+	}
 }
 export default class Produtos extends React.Component {
-	
-	state = { lista: [] };
-
+	state = { lista: [], preco:'',barCode:'', consumidor:'' };
 	
 	handleInputChange = ({ target }) => {
 		var items = $(".dropdown-item");
+		if(target.value.trim().length === 0){
+			items.hide();
+			$("#aviso").show();
+			return;
+		}
 		filter(target.value.trim().toLowerCase(), items);
             const token = localStorage.getItem('auth-token');
-
-			$('#loading-full').toggle();
-			var body = {
-				nome   : target.value,
-			}
+			$('.spinnerProd').show();
+			var body = {nome:target.value}
 			
 			PubSub.publish("limpa-erros",{});    
-			api.post(`/produtos/${token}`, body,  { responseType: 'json' })
+			api.post(`/produtos/${token}`, body, {responseType: 'json'})
 				.then(response => {
-					$('#loading-full').hide();
-					
+					$('.spinnerProd').hide();
 					if(response.data.length > 0){
 						$("#aviso").css('display','none');
 						this.setState({lista: response.data});
 						$(".dropdown-item").click(function(){
 							$('#dropdown_coins').text($(this)[0].value);
+							$('#codBarra').val($(this).parent().find('.barCode').val());
+							$('#preco').val($(this).parent().find('.preco').val());
 							$(".dropdown").removeClass('show');
 							$(".dropdown-menu").removeClass('show');
-							// $("#dropdown_coins").dropdown('toggle');
 						});
 					}		
-					// if(response.statusText == 'OK')
-					// {
-					// 	this.setState({name:'',number:'',passwordCad:'',expiry:'', cvc:''});
-					// }else
-					// {
-					// 	new TratadorErros().publicaErros(response.responseJSON);
-					// 	throw new Error("login incorreto");
-					// }
 				})
 				.catch(error => {
 					$('#loading-full').toggle();
-					console.log(error);return;
+					$('#aviso').show();
+					console.log(error);
+					return;
 				});
-	
 		this.setState({ [target.name]: target.value });
     };
+	setCode(event){
+        this.setState({barCode:event.target.value});
+    }
 
+    setPreco(event){
+        this.setState({preco:event.target.value});
+	}
+	setConsumidor(event){
+        this.setState({consumidor:event.target.value});
+    }
   	render() {
-		const { lista } = this.state;
-		
 		return (
 			<div key="Payment" >
 				<Menu/>
@@ -93,69 +97,91 @@ export default class Produtos extends React.Component {
 					<b.Row className='conteudo'>
 						<b.Col md={{span:6,offset: 3 }}>
 							<div className="App-payment" style={{padding:'0'}}>
-								<h2 style={{color:'black',margin:0}}>Adicionar cartão</h2>
-								<h6 style={{color:'black', margin:'0 auto','textAlign':'center'}}>adicione um cartão à sua conta</h6>
-                                <div className="form-group">
-                                    <div className="col-6">
-                                        <label>Cod. Barra</label>
-										<div className="dropdown">
-											<button className="btn btn-secondary dropdown-toggle" type="button" id="dropdown_coins" data-toggle="dropdown" aria-haspopup="true"
-												aria-expanded="false">
-												Coin
-											</button>
-											<div id="menu" className="dropdown-menu" aria-labelledby="dropdown_coins">
-												<form className="px-4 py-2">
-													<input type="search" className="form-control" id="searchCoin" placeholder="BTC" onChange={this.handleInputChange} autoFocus="autofocus"/>
-												</form>
-												<div id="menuItems">
-												{
-													this.state.lista.map(comentario => {
-														return (
-															<input key={comentario.id} type="button" className="dropdown-item" type="button" value={comentario.nome}/>
-														);
-													})  
-												}
-												
+								<h2 style={{color:'black',margin:0}}>Adicionar compra</h2>
+                                <form>
+									<div className="form-group">
+										<div>
+											<label>Nome</label>
+											<div className="dropdown">
+												<button style={{border:'1px solid lightgray', textAlign:'left'}} className="btn dropdown-toggle form-control" type="button" id="dropdown_coins" data-toggle="dropdown" aria-haspopup="true"
+													aria-expanded="false">
+													Selecione o produto
+												</button>
+												<div style={{width:'100%'}} id="menu" className="dropdown-menu" aria-labelledby="dropdown_coins">
+													<form className="px-4 py-2">
+														<input type="search" className="form-control" id="searchCoin" placeholder="BTC" onChange={this.handleInputChange} autoFocus="autofocus"/>
+													</form>
+													<div id="menuItems" style={{width:'100%'}}>
+														<Spinner style={{margin: '5% 45%',display:'none'}} className="spinnerProd" animation="border" role="status">
+															<span className="sr-only">Loading...</span>
+														</Spinner>
+														{
+															this.state.lista.map(produto => {
+																console.log(produto);
+																return (
+																	<div key={produto.id}>
+																		<input  type="button" className="dropdown-item"  value={produto.nome}/>
+																		<input type="hidden" className="dropdown-item barCode"  value={produto.barCode}/>
+																		<input type="hidden" className="dropdown-item preco"  value={produto.preco}/>
+																	</div>
+																);
+															})  
+														}
+													</div>
+													<div id="aviso" className="dropdown-header">Nenhum produto encontrado</div>
 												</div>
-												<div id="aviso" className="dropdown-header">No coins found</div>
 											</div>
 										</div>
-                                    </div>
-                                </div>
-                                <div className="form-group">
-                                    <div className="col-6">
-                                        <label>Nome</label>
-
-											<input
-											type="tel"
-											name="cvc"
-											className="form-control"
-											placeholder="Nome"
-											pattern="\d{3,4}"
-											required
-											onChange={this.handleInputChange}
-											onFocus={this.handleInputFocus}
-											/>
-                                    </div>
-
-							    </div>
-                                <div className="form-group">
-                                    <div className="col-6">
-                                        <label>Preço</label>
-
-											<input
-											type="tel"
-											name="cvc"
-											className="form-control"
-											placeholder="Preço"
-											pattern="\d{3,4}"
-											required
-											onChange={this.handleInputChange}
-											onFocus={this.handleInputFocus}
-											/>
-                                    </div>
-
-							    </div>
+									</div>
+									<div className="form-group">
+										<div>
+											<label>Cod. Barra</label>
+												<input
+												type="number"
+												name="codBarra"
+												id="codBarra"
+												className="form-control"
+												placeholder="Cod. Barra"
+												pattern="\d{3,4}"
+												required
+												onChange={this.setCode.bind(this)}
+												value={this.state.barCode}
+												/>
+										</div>
+									</div>
+									<div className="form-group">
+										<div>
+											<label>Preço</label>
+												<input
+												type="tel"
+												id="preco"
+												name="preco"
+												className="form-control"
+												placeholder="Preço"
+												pattern="\d{3,4}"
+												required
+												onChange={this.setPreco.bind(this)}
+												value={this.state.preco}
+												/>
+										</div>
+									</div>
+									<div className="form-group">
+										<div>
+											<label>Consumidor</label>
+												<select id="consumidor" name="consumidor" className="form-control" onChange={this.setConsumidor.bind(this)} value={this.state.consumidor}>
+													<option>- Selecione -</option>
+												</select>
+										</div>
+									</div>
+									<div className="form-group">
+										<div>
+											<label>Consumidor</label>
+												<button id="consumidor" name="consumidor" className="btn btn-primary form-control" onChange={this.setConsumidor.bind(this)} value={this.state.consumidor}>
+													<option>- Selecione -</option>
+												</button>
+										</div>
+									</div>
+								</form>
                             </div>
 						</b.Col>
 					</b.Row>

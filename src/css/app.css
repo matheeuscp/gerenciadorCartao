@@ -172,3 +172,6 @@ textarea:focus, input:focus, select:focus {
 .titulo{
   font-weight: bold;
 }
+.navbar{
+  margin-bottom: 0;
+}
